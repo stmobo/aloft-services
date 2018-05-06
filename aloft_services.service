@@ -1,0 +1,19 @@
+[Unit]
+Description=Aloft-Services Service
+Requires=gunicorn.socket
+After=nginx.service
+
+[Service]
+PIDFile=/run/gunicorn/pid
+User=stmobo
+Group=stmobo
+RuntimeDirectory=gunicorn
+WorkingDirectory=/home/stmobo/aloft-services
+ExecStart=/usr/bin/gunicorn --pid /run/gunicorn/pid   \
+          --bind unix:/run/gunicorn/socket aloft_services:app
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
