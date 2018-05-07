@@ -9,7 +9,7 @@ User=stmobo
 Group=stmobo
 RuntimeDirectory=gunicorn
 WorkingDirectory=/home/stmobo/aloft-services
-ExecStart=/usr/bin/gunicorn --pid /run/gunicorn/pid   \
+ExecStart=venv/bin/gunicorn --pid /run/gunicorn/pid   \
           --bind unix:/run/gunicorn/socket aloft_services:app
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MAINPID
