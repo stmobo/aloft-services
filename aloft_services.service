@@ -1,6 +1,6 @@
 [Unit]
 Description=Aloft-Services Service
-Requires=gunicorn.socket
+Requires=aloft_services.socket
 After=nginx.service
 
 [Service]
