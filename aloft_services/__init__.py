@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect
 from logging.config import dictConfig
 
 dictConfig({
@@ -32,6 +32,6 @@ app.config['MAX_CONTENT_LENGTH'] = 64 * 1024 * 1024
 
 @app.route('/')
 def index():
-    return "There may possibly be stuff here, at some point."
+    return redirect('/index.html')
 
 import aloft_services.pdf_rotate
