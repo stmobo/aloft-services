@@ -1,7 +1,10 @@
+-e git+git@github.com:stmobo/aloft-services.git@3e6000453a5257490a7961c115de457818d08c0a#egg=aloft_services
 click==6.7
 Flask==1.0.2
+Flask-Markdown==0.3
 itsdangerous==0.24
 Jinja2==2.10
+Markdown==2.6.11
 MarkupSafe==1.0
 PyPDF2==1.26.0
 Werkzeug==0.14.1
