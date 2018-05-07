@@ -35,3 +35,4 @@ def index():
     return redirect('/index.html')
 
 import aloft_services.pdf_rotate
+import aloft_services.pdf_merge
