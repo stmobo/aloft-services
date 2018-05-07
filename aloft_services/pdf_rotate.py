@@ -6,7 +6,7 @@ import PyPDF2 as pdf
 
 def rotate_pdf(in_stream, filename, resp, direction, degrees):
     direction = direction.lower()
-    
+
     if not (direction == 'cw' or direction == 'ccw'):
         raise BadRequest("Direction must be either 'cw' or 'ccw'!")
 
@@ -32,6 +32,7 @@ def rotate_pdf(in_stream, filename, resp, direction, degrees):
     return resp
 
 @app.route('/pdf/rotate', methods=['POST'])
+def interface_form_route():
     direction = request.form.get('direction').lower()
     degrees = int(request.form.get('degrees'), 10)
     filename = request.form.get('filename')
