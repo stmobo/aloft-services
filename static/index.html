@@ -9,8 +9,8 @@
     <body>
         <div class="pdf-rotator">
             <h2>PDF Rotator</h2>
-            <form class="" action="/pdf/rotate" method="post">
-                <input type="file" name="upload">
+            <form class="" action="/pdf/rotate" method="post" enctype="multipart/form-data">
+                <input type="file" name="upload" />
                 <select class="" name="direction">
                     <option value="cw">Clockwise</option>
                     <option value="ccw">Counter-Clockwise</option>
