@@ -1,6 +1,5 @@
 [Unit]
 Description=Aloft-Services Service
-Requires=aloft_services.socket
 After=nginx.service
 
 [Service]
@@ -10,7 +9,7 @@ Group=stmobo
 RuntimeDirectory=gunicorn
 WorkingDirectory=/home/stmobo/aloft-services
 ExecStart=/home/stmobo/aloft-services/venv/bin/gunicorn --pid /run/gunicorn/pid   \
-          --bind=unix:/run/gunicorn/socket aloft_services:app
+          --bind=127.0.0.1:8000
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MAINPID
 PrivateTmp=true
