@@ -24,6 +24,9 @@ def rotate_pdf(in_stream, filename, resp, direction, degrees):
 
         writer.addPage(page)
 
+    if filename == '' or filename is None:
+        filename = 'rotated.pdf'
+
     resp.status_code = 200
     resp.headers['Content-Disposition'] = "attachment; filename=\"{}\"".format(filename)
     resp.headers['Content-Type'] = 'application/pdf'
@@ -38,6 +41,9 @@ def interface_form_route():
     filename = request.form.get('filename')
     upload = request.files.get('upload')
 
+    if filename == '' or filename is None:
+        filename = upload.filename
+
     with BytesIO() as bio:
         upload.save(bio)
 
@@ -50,6 +56,9 @@ def interface_form_route():
 def form_route(direction, degrees):
     filename = request.form.get('filename')
     upload = request.files.get('upload')
+
+    if filename == '' or filename is None:
+        filename = upload.filename
 
     with BytesIO() as bio:
         upload.save(bio)
