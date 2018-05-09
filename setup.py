@@ -8,6 +8,8 @@ setup(
         'flask',
         'flask-markdown',
         'PyPDF2',
-        'gunicorn'
+        'gunicorn',
+        'mistune',
+        'gitpython'
     ]
 )

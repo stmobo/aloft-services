@@ -1,0 +1,40 @@
+.writer-input {
+    margin-left: 1.0em;
+    margin-right: 1.0em;
+    margin-top: 1.0em;
+}
+
+.writer-output {
+    margin-left: 2.0em;
+    margin-right: 2.0em;
+    margin-top: 1.0em;
+    margin-bottom: 1.0em;
+}
+
+.writer-output > .rendered {
+    margin-left: 0.75em;
+    margin-right: 0.75em;
+    margin-top: 0.5em;
+}
+
+#writing-data {
+    width: 100%;
+}
+
+.history-select {
+    width: 90%;
+    margin-right: 1.0em;
+    overflow-y: scroll;
+    max-height: 13em;
+}
+
+.autosave-timer {
+    width: 12em;
+    display: inline-flex;
+}
+
+.autosave-timer-bar {
+    overflow: hidden;
+    white-space: nowrap;
+    max-height: 100%;
+}

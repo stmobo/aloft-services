@@ -1,5 +1,7 @@
 from flask import Flask, redirect
 from logging.config import dictConfig
+import os
+import os.path as osp
 
 dictConfig({
     'version': 1,
@@ -26,13 +28,20 @@ dictConfig({
     }
 })
 
-
 app = Flask('aloft_services')
 app.config['MAX_CONTENT_LENGTH'] = 64 * 1024 * 1024
 
+if 'ALOFT_SVCS_SETTINGS' in os.environ:
+    app.config.from_envvar('ALOFT_SVCS_SETTINGS')
+
 @app.route('/')
 def index():
-    return redirect('/index.html')
+    return app.send_static_file('index.html')
+
+@app.route('/writing.html')
+def writing():
+    return app.send_static_file('writing.html')
 
 import aloft_services.pdf_rotate
 import aloft_services.pdf_merge
+import aloft_services.markdown

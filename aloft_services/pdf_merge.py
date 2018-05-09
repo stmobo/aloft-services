@@ -27,7 +27,7 @@ def pdf_concat(in_files, filename, resp):
     return resp
 
 @app.route('/pdf/concat', methods=['POST'])
-def form_route():
+def concat_form_route():
     filename = request.form.get('filename')
 
     if filename == '' or filename is None:
