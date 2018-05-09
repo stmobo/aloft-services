@@ -1,5 +1,5 @@
 from aloft_services import app
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, NotFound
 from flask import request, render_template, make_response, jsonify
 import mistune
 import git
@@ -20,28 +20,40 @@ else:
     repo = git.Repo(repo_dir)
 
 def get_tags_for_file(filename):
-    filename = osp.split(filename)[-1]
     return sorted(
         [tag for tag in repo.tags if filename+'/' in tag.name],
         key = lambda t: t.name
     )
 
 def get_commit_for_fileversion(filename, version):
-    return repo.tags[filename+'/'+str(version)].commit
+    try:
+        return repo.tags[filename+'/'+str(version)].commit
+    except IndexError:
+        raise NotFound('No file {} found in repository.'.format(filename))
 
 def get_latest_data(filename):
-    filename = osp.split(filename)[-1]
-    latest_tag = get_tags_for_file(filename)[-1]
-    latest_commit = latest_tag.commit
+    #filename = osp.split(filename)[-1]
+    all_tags = get_tags_for_file(filename)
+    if len(all_tags) == 0:
+        raise NotFound('No file {} found in repository.'.format(filename))
 
-    print("Reading commit {} from tag {}".format(latest_commit, latest_tag.name))
+    latest_commit = all_tags[-1].commit
+
+    #print("Reading commit {} from tag {}".format(latest_commit, latest_tag.name))
     data = latest_commit.tree[filename].data_stream.read()
 
     return data.decode('utf-8')
 
 def write_md_file(filename, data):
-    filename = osp.split(filename)[-1]
+    #filename = osp.split(filename)[-1]
     new_path = osp.normpath(osp.join(repo_dir, filename))
+
+    if not repo_dir in new_path:
+        raise BadRequest('Cannot create file {} in repository.'.format(filename))
+
+    base, fn = osp.split(new_path)
+    if not osp.exists(base):
+        os.makedirs(base)
 
     with open(new_path, 'w') as f:
         f.write(data)
@@ -57,7 +69,7 @@ def write_md_file(filename, data):
     return data
 
 def read_md_file(filename, version=-1):
-    filename = osp.split(filename)[-1]
+    #filename = osp.split(filename)[-1]
 
     if version < 0:
         return get_latest_data(filename)
