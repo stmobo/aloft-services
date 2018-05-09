@@ -29,7 +29,7 @@ async function save_data() {
     $(".rendered").html(data);
 
     load_history(filename);
-    current = false;
+    anything_added = false;
 }
 
 function writing_data() {
