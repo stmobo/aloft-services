@@ -45,3 +45,4 @@ def writing():
 import aloft_services.pdf_rotate
 import aloft_services.pdf_merge
 import aloft_services.markdown
+import aloft_services.c2x_iface
