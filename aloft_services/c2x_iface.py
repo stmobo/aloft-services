@@ -69,7 +69,7 @@ def convert_xml_to_csv():
     bio1 = BytesIO()
     bio2 = BytesIO()
     
-    request.files['opponent'].save(bio1)
+    request.files['behaviour'].save(bio1)
     request.files['meta'].save(bio2)
     
     opponent_elem = bp.parse(bio1.getvalue().decode('utf-8'), bp.base_tag_spec)
