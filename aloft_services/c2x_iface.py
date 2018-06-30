@@ -2,7 +2,7 @@ import csv
 from io import BytesIO, StringIO
 import zipfile as zf
 from aloft_services import app
-from flask import request, make_response
+from flask import request, send_file
 from .csv2xml import behaviour_parser as bp
 from .csv2xml import csv2xml as c2x
 import logging
@@ -59,14 +59,5 @@ def receive_files():
             data_str += meta_elem.serialize()
             
             meta_out.write(data_str.encode('utf-8'))
-
-    resp = make_response()
-
-    resp.status_code = 200
-    resp.headers['Content-Disposition'] = 'attachment; filename="opponent.zip"'
-    resp.headers['Content-Type'] = 'application/zip'
-    out_io.write(resp.stream)
-
-    out_io.close()
-
-    return resp
+    
+    return send_file(out_io, mimetype='application/zip', as_attachment=True, attachment_filename='opponent.zip')
