@@ -79,6 +79,12 @@ def convert_xml_to_csv():
     
     unique_lines, unique_targeted_lines, num_cases, num_targeted_cases = c2x.get_unique_line_count(lineset)
     
+    logging.info("Statistics:")
+    logging.info("Unique Lines: {}".format(unique_lines))
+    logging.info("Unique Targeted Lines: {}".format(unique_targeted_lines))
+    logging.info("Total Cases: {}".format(num_cases))
+    logging.info("Total Targeted Cases: {}".format(num_targeted_cases))
+    
     out_io = StringIO()
     
     fieldnames = [
