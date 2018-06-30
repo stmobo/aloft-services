@@ -15,6 +15,7 @@ dictConfig({
             'formatter': 'default'
         },
         'file': {
+            'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'default',
             'filename': 'log/app.log',
