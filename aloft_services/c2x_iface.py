@@ -38,7 +38,7 @@ def receive_files():
 
     out_io = BytesIO()
 
-    with zf.ZipFile(out_io) as zip_out:
+    with zf.ZipFile(out_io, 'w') as zip_out:
         with zip_out.open('opponent.xml', 'w') as opponent_out:
             opponent_out.write("<?xml version='1.0' encoding='UTF-8'?>\n")
             opponent_out.write('<!-- '+c2x.generate_comment()+' -->\n\n')
