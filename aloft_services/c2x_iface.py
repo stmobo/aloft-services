@@ -1,5 +1,5 @@
 import csv
-from io import BytesIO
+from io import StringIO
 import zipfile as zf
 from aloft_services import app
 from flask import request, make_response
@@ -9,16 +9,21 @@ import logging
 
 @app.route('/csv2xml', methods=['POST'])
 def receive_files():
-    logging.info("Handlling csv2xml route")
-    
     lineset = {}
     opponent_meta = None
+    
     for key, file in request.files.items(multi=True):
         logging.info("Processing file: {}".format(file.filename))
         reader = csv.DictReader(file)
         partial_lineset, opponent_meta = c2x.csv_to_lineset(reader)
 
         lineset.update(partial_lineset)
+        
+    with StringIO(request.get_data(as_text=True)) as sio:
+        if len(bio.getbuffer()) > 0:
+            logging.info("Processing request body data...")
+            reader = csv.DictReader(sio)
+            partial_lineset, opponent_meta = c2x.csv_to_lineset(reader)
 
     unique_lines, unique_targeted_lines, num_cases, num_targeted_cases = c2x.get_unique_line_count(lineset)
 
