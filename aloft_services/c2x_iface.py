@@ -10,7 +10,7 @@ from .csv2xml import csv2xml as c2x
 def receive_files():
     lineset = {}
     opponent_meta = None
-    for key, file in request.files.iteritems(multi=True):
+    for key, file in request.files.items(multi=True):
         reader = csv.DictReader(file)
         partial_lineset, opponent_meta = c2x.csv_to_lineset(reader)
 
