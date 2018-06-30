@@ -10,7 +10,7 @@ import logging
 c2x.config_opponents_dir('/home/stmobo/spnati.gitlab.io/opponents')
 
 @app.route('/csv2xml', methods=['POST'])
-def receive_files():
+def convert_csv_to_xml():
     lineset = {}
     opponent_meta = None
     
@@ -63,3 +63,46 @@ def receive_files():
     out_io.seek(0)
     
     return send_file(out_io, as_attachment=True, attachment_filename='opponent.zip')
+    
+@app.route('/xml2csv', methods=['POST'])
+def convert_xml_to_csv():
+    bio1 = BytesIO()
+    bio2 = BytesIO()
+    
+    request.files['opponent'].save(bio1)
+    request.files['meta'].save(bio2)
+    
+    opponent_elem = bp.parse(bio1.getvalue().decode('utf-8'), bp.base_tag_spec)
+    meta_elem = bp.parse(bio2.getvalue().decode('utf-8'), bp.meta_tag_spec)
+    
+    opponent_meta = c2x.Opponent.from_xml(opponent_elem, meta_elem)
+    lineset = c2x.xml_to_lineset(opponent_elem)
+    
+    unique_lines, unique_targeted_lines, num_cases, num_targeted_cases = c2x.get_unique_line_count(lineset)
+    
+    out_io = StringIO()
+    
+    fieldnames = [
+        'stage',
+        'case',
+        'conditions',
+        'image',
+        'text',
+        'marker',
+        'priority',
+        'silent',
+    ]
+
+    writer = csv.DictWriter(out_io, fieldnames, restval='')
+    writer.writeheader()
+    writer.writerow({'stage': 'comment', 'text': c2x.generate_comment()})
+    writer.writerow({'stage': 'comment', 'text': 'File Statistics:'})
+    writer.writerow({'stage': 'comment', 'text': 'Unique Lines: {}'.format(unique_lines)})
+    writer.writerow({'stage': 'comment', 'text': 'Unique Targeted Lines: {}'.format(unique_targeted_lines)})
+    writer.writerow({'stage': 'comment', 'text': 'Total Cases: {}'.format(num_cases)})
+    writer.writerow({'stage': 'comment', 'text': 'Total Targeted Cases: {}'.format(num_targeted_cases)})
+    c2x.lineset_to_csv(lineset, opponent_meta, writer)
+    
+    out_io.seek(0)
+    
+    return send_file(out_io, as_attachment=True, attachment_filename='behaviour.csv')
