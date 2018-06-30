@@ -59,5 +59,7 @@ def receive_files():
             data_str += meta_elem.serialize()
             
             meta_out.write(data_str.encode('utf-8'))
+            
+    out_io.seek(0)
     
     return send_file(out_io, mimetype='application/zip', as_attachment=True, attachment_filename='opponent.zip')
