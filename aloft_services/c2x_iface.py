@@ -9,6 +9,8 @@ import logging
 
 @app.route('/csv2xml', methods=['POST'])
 def receive_files():
+    logging.info("Handlling csv2xml route")
+    
     lineset = {}
     opponent_meta = None
     for key, file in request.files.items(multi=True):
