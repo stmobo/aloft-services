@@ -85,7 +85,7 @@ def convert_xml_to_csv():
     logging.info("Total Cases: {}".format(num_cases))
     logging.info("Total Targeted Cases: {}".format(num_targeted_cases))
     
-    out_io = StringIO()
+    out_io = StringIO(newline='')
     
     fieldnames = [
         'stage',
@@ -107,7 +107,5 @@ def convert_xml_to_csv():
     writer.writerow({'stage': 'comment', 'text': 'Total Cases: {}'.format(num_cases)})
     writer.writerow({'stage': 'comment', 'text': 'Total Targeted Cases: {}'.format(num_targeted_cases)})
     c2x.lineset_to_csv(lineset, opponent_meta, writer)
-    
-    out_io.seek(0)
     
     return send_file(out_io, as_attachment=True, attachment_filename='behaviour.csv')
