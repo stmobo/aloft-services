@@ -1,4 +1,4 @@
--e git+git@github.com:stmobo/aloft-services.git@3e6000453a5257490a7961c115de457818d08c0a#egg=aloft_services
+-e git+git://github.com/stmobo/aloft-services.git@master#egg=aloft_services
 click==6.7
 Flask==1.0.2
 Flask-Markdown==0.3
