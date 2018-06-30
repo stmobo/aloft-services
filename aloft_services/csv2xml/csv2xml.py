@@ -15,8 +15,8 @@ import os
 import os.path as osp
 import re
 import time
-from behaviour_parser import parse_file, parse_meta
-from ordered_xml import OrderedXMLElement
+from .behaviour_parser import parse_file, parse_meta
+from .ordered_xml import OrderedXMLElement
 
 VERSION = '0.14.2-alpha'  # will attempt to follow semver if possible
 COMMENT_TIME_FORMAT = 'at %X %Z on %A, %B %d, %Y'  # strftime format
