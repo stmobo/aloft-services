@@ -30,7 +30,7 @@ def receive_files():
     with zf.ZipFile(out_io) as zip_out:
         with zip_out.open('opponent.xml', 'w') as opponent_out:
             opponent_out.write("<?xml version='1.0' encoding='UTF-8'?>\n")
-            opponent_out.write('<!-- '+generate_comment()+' -->\n\n')
+            opponent_out.write('<!-- '+c2x.generate_comment()+' -->\n\n')
             opponent_out.write('<!--\n')
             opponent_out.write('    File Statistics:\n')
             opponent_out.write('    Unique Lines: {}\n'.format(unique_lines))
@@ -42,7 +42,7 @@ def receive_files():
 
         with zip_out.open('meta.xml', 'w') as meta_out:
             meta_out.write("<?xml version='1.0' encoding='UTF-8'?>\n")
-            meta_out.write('<!-- '+generate_comment()+' -->\n')
+            meta_out.write('<!-- '+c2x.generate_comment()+' -->\n')
             meta_out.write(meta_elem.serialize())
 
     resp = make_response()
