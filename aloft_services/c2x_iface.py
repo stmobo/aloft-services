@@ -7,7 +7,7 @@ from .csv2xml import behaviour_parser as bp
 from .csv2xml import csv2xml as c2x
 import logging
 
-c2x.config_opponents_dir('~/spnati.gitlab.io/opponents')
+c2x.config_opponents_dir('/home/stmobo/spnati.gitlab.io/opponents')
 
 @app.route('/csv2xml', methods=['POST'])
 def receive_files():
