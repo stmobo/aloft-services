@@ -11,6 +11,7 @@ if sys.version_info[0] < 3:
 import csv
 from collections import OrderedDict
 import functools
+import logging
 import os
 import os.path as osp
 import re
@@ -21,6 +22,11 @@ from .ordered_xml import OrderedXMLElement
 VERSION = '0.13.1-alpha'  # will attempt to follow semver if possible
 COMMENT_TIME_FORMAT = 'at %X %Z on %A, %B %d, %Y'  # strftime format
 WARNING_COMMENT = 'This file was machine generated using csv2xml.py {:s} {:s}. Please do not edit it directly without preserving your improvements elsewhere or your changes may be lost the next time this file is generated.'
+
+_opponents_dir = None
+
+def config_opponents_dir(d):
+    _opponents_dir = d
 
 def generate_comment():
     return WARNING_COMMENT.format(VERSION, time.strftime(COMMENT_TIME_FORMAT))
@@ -51,6 +57,11 @@ def format_interval(interval):
 
 __xml_cache = {}
 def get_target_xml(target, opponents_dir=None):
+    if _opponents_dir is not None:
+        if osp.basename(_opponents_dir) == 'opponents':
+            logging.info("Found opponents directory at {}".format(osp.abspath(_opponents_dir)))
+            opponents_dir = osp.abspath(_opponents_dir)
+    
     if opponents_dir is None:
         # try to find the main opponents directory
         if osp.basename(os.getcwd()) == 'opponents':
