@@ -11,23 +11,16 @@ if sys.version_info[0] < 3:
 import csv
 from collections import OrderedDict
 import functools
-import logging
 import os
 import os.path as osp
 import re
 import time
-from .behaviour_parser import parse_file, parse_meta
-from .ordered_xml import OrderedXMLElement
+from behaviour_parser import parse_file, parse_meta
+from ordered_xml import OrderedXMLElement
 
-VERSION = '0.13.1-alpha'  # will attempt to follow semver if possible
+VERSION = '0.14.2-alpha'  # will attempt to follow semver if possible
 COMMENT_TIME_FORMAT = 'at %X %Z on %A, %B %d, %Y'  # strftime format
 WARNING_COMMENT = 'This file was machine generated using csv2xml.py {:s} {:s}. Please do not edit it directly without preserving your improvements elsewhere or your changes may be lost the next time this file is generated.'
-
-_opponents_dir = None
-
-def config_opponents_dir(d):
-    global _opponents_dir
-    _opponents_dir = d
 
 def generate_comment():
     return WARNING_COMMENT.format(VERSION, time.strftime(COMMENT_TIME_FORMAT))
@@ -58,13 +51,6 @@ def format_interval(interval):
 
 __xml_cache = {}
 def get_target_xml(target, opponents_dir=None):
-    global _opponents_dir
-    
-    if _opponents_dir is not None:
-        if osp.basename(_opponents_dir) == 'opponents':
-            logging.info("Found opponents directory at {}".format(osp.abspath(_opponents_dir)))
-            opponents_dir = osp.abspath(_opponents_dir)
-    
     if opponents_dir is None:
         # try to find the main opponents directory
         if osp.basename(os.getcwd()) == 'opponents':
@@ -153,6 +139,15 @@ simple_pseudo_cases = {
     'opponent_chest_will_be_visible':   ['male_chest_will_be_visible', 'female_chest_will_be_visible'],
     'opponent_crotch_will_be_visible':  ['male_crotch_will_be_visible', 'female_crotch_will_be_visible'],
     'opponent_must_masturbate':         ['male_must_masturbate', 'female_must_masturbate'],
+    
+    'opponent_removed_accessory':       ['male_removed_accessory', 'female_removed_accessory'],
+    'opponent_removed_minor':           ['male_removed_minor', 'female_removed_minor'],
+    'opponent_removed_major':           ['male_removed_major', 'female_removed_major'],
+    'opponent_chest_is_visible':        ['male_chest_is_visible', 'female_small_chest_is_visible', 'female_medium_chest_is_visible', 'female_large_chest_is_visible'],
+    'female_chest_is_visible':          ['female_small_chest_is_visible', 'female_medium_chest_is_visible', 'female_large_chest_is_visible'],
+    'opponent_crotch_is_visible':       ['female_crotch_is_visible', 'male_small_crotch_is_visible', 'male_medium_crotch_is_visible', 'male_large_crotch_is_visible'],
+    'male_crotch_is_visible':           ['male_small_crotch_is_visible', 'male_medium_crotch_is_visible', 'male_large_crotch_is_visible'],
+    'opponent_start_masturbating':      ['male_start_masturbating', 'female_start_masturbating'],
 
     'opponent_removing_any': [
         'male_removing_accessory',
@@ -201,20 +196,19 @@ simple_pseudo_cases = {
 }
 
 def parse_case_name(case_tags, cond_str):
-    target_id = None
-    target_stage_low = None
-    target_stage_high = None
 
     # we don't need the case tag or priority for this purpose
-    cond_set = Case.parse_conditions_set(cond_str, None, None)
-
-    for cond_tuple in cond_set:
-        if cond_tuple[0] == 'targetStage':
-            target_stage_low = cond_tuple[1]
-            target_stage_high = cond_tuple[2]
-        elif cond_tuple[0] == 'target':
-            target_id = cond_tuple[1]
-
+    conditions, _, _, _ = Case.parse_conditions(cond_str)
+    
+    target_id = conditions.get('target')
+    
+    if 'targetStage' in conditions:
+        target_stage_low = conditions['targetStage'][0]
+        target_stage_high = conditions['targetStage'][1]
+    else:
+        target_stage_low = None
+        target_stage_high = None
+        
     tag_list = []
 
     for name in case_tags.split(','):
@@ -239,7 +233,7 @@ def parse_case_name(case_tags, cond_str):
                 raise ValueError("The 'target_stripping' and 'target_stripped' pseudo-cases do not currently work with interval target stages.")
 
             if target_id is None or target_stage_low is None:
-                raise ValueError("Lines must have targets and target stages set in order to use the 'target_stripping' amd 'target_stripped' pseudo-cases!")
+                raise ValueError("Lines must have targets and target stages set in order to use the 'target_stripping' and 'target_stripped' pseudo-cases!")
             else:
                 if name == 'target_stripping':
                     tag_list.append(get_target_stripping_case(target_id, target_stage_low))
@@ -645,8 +639,8 @@ class Case(object):
     def __init__(self, tag, conditions=None, custom_priority=None):
         self.tag = tag
         self.priority = custom_priority
-        self.conditions = []
-        self.counters = []
+        self.conditions = {}
+        self.counters = {}
         self.states = []
 
         if conditions is None:
@@ -664,8 +658,8 @@ class Case(object):
     def parse_conditions(cls, conditions):
         priority = None
         tag = None
-        attr_conditions = []
-        counters = []
+        attr_conditions = {}
+        counters = {}
 
         if isinstance(conditions, str) and len(conditions) > 0:
             conditions = [cond.split('=') for cond in conditions.split(',')]
@@ -692,8 +686,8 @@ class Case(object):
                     tag = tag_match.group(1)
                     if len(cond_tuple) == 2:
                         low, hi = parse_interval(val)
-
-                    counters.append((tag, low, hi))
+                        
+                    counters[tag] = (low, hi)
                 elif attr == 'priority':
                     priority = int(val)
                 elif attr == 'tag':
@@ -703,11 +697,11 @@ class Case(object):
                     # split condition interval if necessary
                     if len(cond_tuple) == 2:
                         low, hi = parse_interval(val)
-
-                    attr_conditions.append((attr, low, hi))
+                        
+                    attr_conditions[attr] = (low, hi)
                 else:
                     # attribute condition taking an identifier
-                    attr_conditions.append((attr, val.strip()))
+                    attr_conditions[attr] = val.strip()
 
                     if attr not in cls.ID_CONDITIONS:
                         print("[Warning] case condition type not recognized: {}".format(attr))
@@ -728,14 +722,21 @@ class Case(object):
 
     @classmethod
     def _make_conditions_set(cls, attr_conds, counters, tag, priority):
-        extra_conditions = [('tag', tag)]
-        for counter in counters:
-            extra_conditions.append(('tag:'+counter[0], counter[1], counter[2]))
+        condition_tuples = [('tag', tag)]
+        
+        for tag_name, counter in counters.items():
+            condition_tuples.append(('tag:'+tag_name, counter[0], counter[1]))
 
         if priority is not None:
-            extra_conditions.append(('priority', priority))
+            condition_tuples.append(('priority', priority))
 
-        return frozenset(attr_conds + extra_conditions)
+        for attr, val in attr_conds.items():
+            if isinstance(val, tuple):
+                condition_tuples.append((attr, *val))
+            else:
+                condition_tuples.append((attr, val))
+
+        return frozenset(condition_tuples)
 
     def conditions_set(self):
         return self._make_conditions_set(self.conditions, self.counters, self.tag, self.priority)
@@ -745,14 +746,14 @@ class Case(object):
 
     def format_conditions(self):
         attrs = []
-        for cond in self.conditions:
-            if len(cond) == 3:
-                attrs.append("{:s}={:s}".format(cond[0], format_interval(cond[1:3])))
+        for attr, cond in self.conditions.items():
+            if isinstance(cond, tuple):
+                attrs.append("{:s}={:s}".format(attr, format_interval(cond)))
             else:
-                attrs.append("{:s}={:s}".format(cond[0], cond[1]))
+                attrs.append("{:s}={:s}".format(attr, cond))
 
-        for counter in self.counters:
-            attrs.append("tag:{:s}={:s}".format(counter[0], format_interval(counter[1:3])))
+        for tag, counter in self.counters.items():
+            attrs.append("tag:{:s}={:s}".format(tag, format_interval(counter)))
 
         return ','.join(attrs)
 
@@ -796,22 +797,21 @@ class Case(object):
         elem = OrderedXMLElement('case')
         elem.attributes['tag'] = self.tag
 
-        for cond in self.conditions:
-            attr = cond[0]
-            if len(cond) == 3:
-                val = format_interval(cond[1:])
+        for attr, cond in self.conditions.items():
+            if isinstance(cond, tuple):
+                val = format_interval(cond)
             else:
-                val = cond[1]
+                val = cond
 
             elem.attributes[attr] = val
 
         if self.priority is not None:
             elem.attributes['priority'] = str(self.priority)
 
-        for counter in self.counters:
+        for tag, counter in self.counters.items():
             child = OrderedXMLElement('condition')
-            child.attributes['count'] = format_interval(counter[1:])
-            child.attributes['filter'] = counter[0]
+            child.attributes['count'] = format_interval(counter)
+            child.attributes['filter'] = tag
             elem.children.append(child)
 
         for state in self.states:
@@ -1035,6 +1035,9 @@ def csv_to_lineset(dict_reader):
         silent = False
         if ('silent' in row) and (len(row['silent']) > 0):
             silent = (row['silent'].lower() == 'true')
+            
+        if len(row['image']) == 0 and len(row['text']) == 0:
+            continue
 
         for actual_case_tag in parse_case_name(row['case'], row['conditions']):
             cond_set = Case.parse_conditions_set(row['conditions'], actual_case_tag, priority)
@@ -1132,7 +1135,7 @@ def lineset_to_csv(lineset, opponent_meta, dict_writer):
                     'silent': state.silent
                 }
 
-                writer.writerow(row)
+                dict_writer.writerow(row)
 
 
 def get_unique_line_count(lineset):
@@ -1156,6 +1159,10 @@ def get_unique_line_count(lineset):
 
     return len(unique_lines), len(unique_targeted_lines), n_cases, n_targeted_cases
 
+
+def parse_xml_to_lineset(fname):
+    opponent_elem = parse_file(fname)
+    return xml_to_lineset(opponent_elem)
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
