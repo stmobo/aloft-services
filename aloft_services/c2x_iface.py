@@ -66,14 +66,11 @@ def convert_csv_to_xml():
     
 @app.route('/xml2csv', methods=['POST'])
 def convert_xml_to_csv():
-    bio1 = BytesIO()
-    bio2 = BytesIO()
+    behaviour_data = request.files['behaviour'].stream.read()
+    meta_data = request.files['meta'].stream.read()
     
-    request.files['behaviour'].save(bio1)
-    request.files['meta'].save(bio2)
-    
-    opponent_elem = bp.parse(bio1.getvalue().decode('utf-8'), bp.base_tag_spec)
-    meta_elem = bp.parse(bio2.getvalue().decode('utf-8'), bp.meta_tag_spec)
+    opponent_elem = bp.parse(behaviour_data.decode('utf-8'), bp.base_tag_spec)
+    meta_elem = bp.parse(meta_data.decode('utf-8'), bp.meta_tag_spec)
     
     opponent_meta = c2x.Opponent.from_xml(opponent_elem, meta_elem)
     lineset = c2x.xml_to_lineset(opponent_elem)
