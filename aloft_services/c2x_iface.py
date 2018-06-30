@@ -69,7 +69,7 @@ def convert_xml_to_csv():
     behaviour_data = request.files['behaviour'].stream.read()
     meta_data = request.files['meta'].stream.read()
     
-    logging.info('Read {} bytes for behaviour.xml and {} bytes for meta.xml', len(behaviour_data), len(meta_data))
+    logging.info('Read {} bytes for behaviour.xml and {} bytes for meta.xml'.format(len(behaviour_data), len(meta_data)))
     
     opponent_elem = bp.parse(behaviour_data.decode('utf-8'), bp.base_tag_spec)
     meta_elem = bp.parse(meta_data.decode('utf-8'), bp.meta_tag_spec)
