@@ -5,13 +5,14 @@ from aloft_services import app
 from flask import request, make_response
 from .csv2xml import behaviour_parser as bp
 from .csv2xml import csv2xml as c2x
+import logging
 
 @app.route('/csv2xml', methods=['POST'])
 def receive_files():
     lineset = {}
     opponent_meta = None
     for key, file in request.files.items(multi=True):
-        print("Processing file: {}".format(file.filename))
+        logging.info("Processing file: {}".format(file.filename))
         reader = csv.DictReader(file)
         partial_lineset, opponent_meta = c2x.csv_to_lineset(reader)
 
