@@ -1,5 +1,5 @@
 import csv
-from io import StringIO
+from io import BytesIO, StringIO
 import zipfile as zf
 from aloft_services import app
 from flask import request, make_response
@@ -12,19 +12,19 @@ def receive_files():
     lineset = {}
     opponent_meta = None
     
-    for key, file in request.files.items(multi=True):
-        logging.info("Processing file: {}".format(file.filename))
-        reader = csv.DictReader(file)
-        partial_lineset, opponent_meta = c2x.csv_to_lineset(reader)
-
-        lineset.update(partial_lineset)
+    logging.info("Processing request data...")
+    with BytesIO(request.get_data()) as bio:
+        for key, file in request.files.items(multi=True):
+            logging.info("Processing file: {}".format(file.filename))
+            file.save(bio)
+            
+        logging.info("Read {} bytes total.".format(len(bio.getvalue())))
+        all_data = bio.getvalue().decode('utf-8')
         
-    with StringIO(request.get_data(as_text=True)) as sio:
-        if len(sio.getbuffer()) > 0:
-            logging.info("Processing request body data...")
+        with StringIO(all_data) as sio:
             reader = csv.DictReader(sio)
-            partial_lineset, opponent_meta = c2x.csv_to_lineset(reader)
-
+            lineset, opponent_meta = c2x.csv_to_lineset(reader)
+            
     unique_lines, unique_targeted_lines, num_cases, num_targeted_cases = c2x.get_unique_line_count(lineset)
 
     opponent_elem = opponent_meta.to_xml()
