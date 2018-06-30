@@ -40,21 +40,25 @@ def receive_files():
 
     with zf.ZipFile(out_io, 'w') as zip_out:
         with zip_out.open('opponent.xml', 'w') as opponent_out:
-            opponent_out.write(b"<?xml version='1.0' encoding='UTF-8'?>\n")
-            opponent_out.write(b'<!-- '+c2x.generate_comment()+' -->\n\n')
-            opponent_out.write(b'<!--\n')
-            opponent_out.write(b'    File Statistics:\n')
-            opponent_out.write(b'    Unique Lines: {}\n'.format(unique_lines))
-            opponent_out.write(b'    Unique Targeted Lines: {}\n'.format(unique_targeted_lines))
-            opponent_out.write(b'    Total Cases: {}\n'.format(num_cases))
-            opponent_out.write(b'    Total Targeted Cases: {}\n'.format(num_targeted_cases))
-            opponent_out.write(b'-->\n\n'.format(num_targeted_cases))
-            opponent_out.write(opponent_elem.serialize().encode('utf-8'))
+            data_str  = "<?xml version='1.0' encoding='UTF-8'?>\n"
+            data_str += '<!-- '+c2x.generate_comment()+' -->\n\n'
+            data_str += '<!--\n'
+            data_str += '    File Statistics:\n'
+            data_str += '    Unique Lines: {}\n'.format(unique_lines)
+            data_str += '    Unique Targeted Lines: {}\n'.format(unique_targeted_lines)
+            data_str += '    Total Cases: {}\n'.format(num_cases)
+            data_str += '    Total Targeted Cases: {}\n'.format(num_targeted_cases)
+            data_str += '-->\n\n'.format(num_targeted_cases)
+            data_str += opponent_elem.serialize()
+            
+            opponent_out.write(data_str.encode('utf-8'))
 
         with zip_out.open('meta.xml', 'w') as meta_out:
-            meta_out.write(b"<?xml version='1.0' encoding='UTF-8'?>\n")
-            meta_out.write(b'<!-- '+c2x.generate_comment()+' -->\n')
-            meta_out.write(meta_elem.serialize().encode('utf-8'))
+            data_str  = "<?xml version='1.0' encoding='UTF-8'?>\n"
+            data_str += '<!-- '+c2x.generate_comment()+' -->\n'
+            data_str += meta_elem.serialize()
+            
+            meta_out.write(data_str.encode('utf-8'))
 
     resp = make_response()
 
