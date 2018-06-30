@@ -3,8 +3,8 @@ from io import BytesIO
 import zipfile as zf
 from aloft_services import app
 from flask import request, make_response
-from csv2xml import behaviour_parser as bp
-from csv2xml import csv2xml as c2x
+from .csv2xml import behaviour_parser as bp
+from .csv2xml import csv2xml as c2x
 
 @app.route('/csv2xml', methods=['POST'])
 def receive_files():
