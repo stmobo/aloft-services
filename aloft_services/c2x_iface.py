@@ -108,4 +108,7 @@ def convert_xml_to_csv():
     writer.writerow({'stage': 'comment', 'text': 'Total Targeted Cases: {}'.format(num_targeted_cases)})
     c2x.lineset_to_csv(lineset, opponent_meta, writer)
     
-    return send_file(out_io, as_attachment=True, attachment_filename='behaviour.csv')
+    bio = BytesIO(out_io.getvalue().encode('utf-8'))
+    out_io.close()
+    
+    return send_file(bio, as_attachment=True, attachment_filename='behaviour.csv')
