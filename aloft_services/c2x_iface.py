@@ -20,7 +20,7 @@ def receive_files():
         lineset.update(partial_lineset)
         
     with StringIO(request.get_data(as_text=True)) as sio:
-        if len(bio.getbuffer()) > 0:
+        if len(sio.getbuffer()) > 0:
             logging.info("Processing request body data...")
             reader = csv.DictReader(sio)
             partial_lineset, opponent_meta = c2x.csv_to_lineset(reader)
