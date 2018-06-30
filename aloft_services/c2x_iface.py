@@ -62,4 +62,4 @@ def receive_files():
             
     out_io.seek(0)
     
-    return send_file(out_io, mimetype='application/zip', as_attachment=True, attachment_filename='opponent.zip')
+    return send_file(out_io, as_attachment=True, attachment_filename='opponent.zip')
