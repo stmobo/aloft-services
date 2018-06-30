@@ -26,6 +26,7 @@ WARNING_COMMENT = 'This file was machine generated using csv2xml.py {:s} {:s}. P
 _opponents_dir = None
 
 def config_opponents_dir(d):
+    global _opponents_dir
     _opponents_dir = d
 
 def generate_comment():
@@ -57,6 +58,8 @@ def format_interval(interval):
 
 __xml_cache = {}
 def get_target_xml(target, opponents_dir=None):
+    global _opponents_dir
+    
     if _opponents_dir is not None:
         if osp.basename(_opponents_dir) == 'opponents':
             logging.info("Found opponents directory at {}".format(osp.abspath(_opponents_dir)))
