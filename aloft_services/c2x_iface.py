@@ -40,21 +40,21 @@ def receive_files():
 
     with zf.ZipFile(out_io, 'w') as zip_out:
         with zip_out.open('opponent.xml', 'w') as opponent_out:
-            opponent_out.write("<?xml version='1.0' encoding='UTF-8'?>\n")
-            opponent_out.write('<!-- '+c2x.generate_comment()+' -->\n\n')
-            opponent_out.write('<!--\n')
-            opponent_out.write('    File Statistics:\n')
-            opponent_out.write('    Unique Lines: {}\n'.format(unique_lines))
-            opponent_out.write('    Unique Targeted Lines: {}\n'.format(unique_targeted_lines))
-            opponent_out.write('    Total Cases: {}\n'.format(num_cases))
-            opponent_out.write('    Total Targeted Cases: {}\n'.format(num_targeted_cases))
-            opponent_out.write('-->\n\n'.format(num_targeted_cases))
-            opponent_out.write(opponent_elem.serialize())
+            opponent_out.write(b"<?xml version='1.0' encoding='UTF-8'?>\n")
+            opponent_out.write(b'<!-- '+c2x.generate_comment()+' -->\n\n')
+            opponent_out.write(b'<!--\n')
+            opponent_out.write(b'    File Statistics:\n')
+            opponent_out.write(b'    Unique Lines: {}\n'.format(unique_lines))
+            opponent_out.write(b'    Unique Targeted Lines: {}\n'.format(unique_targeted_lines))
+            opponent_out.write(b'    Total Cases: {}\n'.format(num_cases))
+            opponent_out.write(b'    Total Targeted Cases: {}\n'.format(num_targeted_cases))
+            opponent_out.write(b'-->\n\n'.format(num_targeted_cases))
+            opponent_out.write(opponent_elem.serialize().encode('utf-8'))
 
         with zip_out.open('meta.xml', 'w') as meta_out:
-            meta_out.write("<?xml version='1.0' encoding='UTF-8'?>\n")
-            meta_out.write('<!-- '+c2x.generate_comment()+' -->\n')
-            meta_out.write(meta_elem.serialize())
+            meta_out.write(b"<?xml version='1.0' encoding='UTF-8'?>\n")
+            meta_out.write(b'<!-- '+c2x.generate_comment()+' -->\n')
+            meta_out.write(meta_elem.serialize().encode('utf-8'))
 
     resp = make_response()
 
