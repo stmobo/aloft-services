@@ -38,6 +38,10 @@ if 'ALOFT_SVCS_SETTINGS' in os.environ:
 @app.route('/')
 def index():
     return app.send_static_file('index.html')
+    
+@app.route('/spnati-utils.html')
+def writing():
+    return app.send_static_file('spnati-utils.html')
 
 @app.route('/writing.html')
 def writing():
