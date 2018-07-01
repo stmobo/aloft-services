@@ -1,0 +1,10 @@
+.pdf-rotator, .converter-form {
+    margin-left: 1.2em;
+    margin-right: 1.2em;
+    margin-top: 1.2em;
+}
+
+.pdf-rotator > form > * {
+    display:block;
+    margin-top: 0.5em;
+}
